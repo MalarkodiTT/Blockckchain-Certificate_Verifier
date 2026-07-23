@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login - Secure Academic Chain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏛️ Admin Portal</h1>
+            <p>University Authorized Access</p>
+        </header>
+        <main class="card" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="margin-bottom: 20px; font-size: 1.3rem;">University Admin Login</h2>
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div>
+                    <label>Admin User ID</label>
+                    <input type="text" id="adminUser" placeholder="Enter admin ID" required>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>Password</label>
+                    <input type="password" id="adminPass" placeholder="Enter password" required>
+                </div>
+                <p id="errorMsg" style="color: #f87171; font-size: 0.85rem; margin-top: 12px;"></p>
+                <button type="submit" style="width: 100%; margin-top: 20px;">Login to Dashboard</button>
+            </form>
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </main>
+    </div>
+    <script>
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUser').value;
+            const password = document.getElementById('adminPass').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            // Direct frontend validation for University Admin
+            if (username === 'adminblockchain' && password === 'hash123') {
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                errorMsg.innerText = '❌ Invalid Admin Credentials!';
+            }
+        }
+    </script>
+</body>
+</html>

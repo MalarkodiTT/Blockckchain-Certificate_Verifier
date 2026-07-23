@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Portal - Secure Academic Chain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Student Portal</h1>
+            <p>Access your verifiable academic credentials</p>
+        </header>
+        <main class="card" style="max-width: 480px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="formTitle" style="font-size: 1.3rem;">Student Login</h2>
+                <div>
+                    <button type="button" onclick="switchMode('login')" id="loginTabBtn" style="padding: 6px 14px; font-size: 0.85rem; background: #0ea5e9; border: none; border-radius: 6px; color: #fff; cursor: pointer; box-shadow: none;">Login</button>
+                    <button type="button" onclick="switchMode('register')" id="regTabBtn" style="padding: 6px 14px; font-size: 0.85rem; background: #334155; border: none; border-radius: 6px; color: #cbd5e1; cursor: pointer; box-shadow: none;">Register</button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div>
+                    <label>Register Number</label>
+                    <input type="text" id="loginRegNo" placeholder="Enter your register number" required>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" style="width: 100%; margin-top: 20px;">Login Account</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                <div>
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name" required>
+                </div>
+                <div style="margin-top: 12px;">
+                    <label>Register Number</label>
+                    <input type="text" id="regRegNo" placeholder="Enter register number" required>
+                </div>
+                <div style="margin-top: 12px;">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="Enter email" required>
+                </div>
+                <div style="margin-top: 12px;">
+                    <label>Course Name</label>
+                    <input type="text" id="regCourse" placeholder="e.g. B.E Computer Science" required>
+                </div>
+                <div style="margin-top: 12px;">
+                    <label>Create Password</label>
+                    <input type="password" id="regPassword" placeholder="Create new password" required>
+                </div>
+                <button type="submit" style="width: 100%; margin-top: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Register Account</button>
+            </form>
+
+            <p id="msgBox" style="margin-top: 15px; font-size: 0.9rem; text-align: center;"></p>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchMode(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const regForm = document.getElementById('registerForm');
+            const loginBtn = document.getElementById('loginTabBtn');
+            const regBtn = document.getElementById('regTabBtn');
+            const title = document.getElementById('formTitle');
+            const msg = document.getElementById('msgBox');
+            msg.innerText = '';
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                loginBtn.style.background = '#0ea5e9';
+                loginBtn.style.color = '#fff';
+                regBtn.style.background = '#334155';
+                regBtn.style.color = '#cbd5e1';
+                title.innerText = 'Student Login';
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                regBtn.style.background = '#10b981';
+                regBtn.style.color = '#fff';
+                loginBtn.style.background = '#334155';
+                loginBtn.style.color = '#cbd5e1';
+                title.innerText = 'Student Register';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const regNo = document.getElementById('loginRegNo').value;
+            const password = document.getElementById('loginPassword').value;
+            const msg = document.getElementById('msgBox');
+
+            const res = await fetch('/api/student/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ regNo, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem('studentData', JSON.stringify(data.data));
+                window.location.href = 'student-dashboard.html';
+            } else {
+                msg.style.color = '#f87171';
+                msg.innerText = data.message;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const regNo = document.getElementById('regRegNo').value;
+            const email = document.getElementById('regEmail').value;
+            const course = document.getElementById('regCourse').value;
+            const password = document.getElementById('regPassword').value;
+            const msg = document.getElementById('msgBox');
+
+            const res = await fetch('/api/student/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, regNo, email, course, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                msg.style.color = '#34d399';
+                msg.innerText = 'Registered successfully! Please login.';
+                setTimeout(() => switchMode('login'), 1200);
+            } else {
+                msg.style.color = '#f87171';
+                msg.innerText = data.message;
+            }
+        }
+    </script>
+</body>
+</html>

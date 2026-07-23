@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - Secure Academic Chain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Portal Access</h1>
+            <p>Login or Register based on your role</p>
+        </header>
+
+        <main class="card">
+            <div class="tab-buttons" style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button onclick="switchTab('login')" id="loginTabBtn" style="background: #0ea5e9;">Login</button>
+                <button onclick="switchTab('register')" id="regTabBtn" style="background: #475569;">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <h2>Sign In</h2>
+                <input type="email" id="loginEmail" placeholder="Email Address" required style="width:100%; margin-bottom:15px;">
+                <input type="password" id="loginPassword" placeholder="Password" required style="width:100%; margin-bottom:15px;">
+                <button type="submit" style="width:100%;">Login</button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                <h2>Create Account</h2>
+                <input type="text" id="regName" placeholder="Full Name" required style="width:100%; margin-bottom:15px;">
+                <input type="email" id="regEmail" placeholder="Email Address" required style="width:100%; margin-bottom:15px;">
+                <input type="password" id="regPassword" placeholder="Password" required style="width:100%; margin-bottom:15px;">
+                <select id="regRole" required style="width:100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; background: #0f172a; color: #fff; border: 1px solid #475569;">
+                    <option value="" disabled selected>Select Your Role</option>
+                    <option value="admin">University Admin</option>
+                    <option value="issuer">College Issuer</option>
+                    <option value="student">Student</option>
+                </select>
+                <button type="submit" style="width:100%;">Register</button>
+            </form>
+
+            <div id="msgBox" style="margin-top: 15px; font-size: 0.9rem;"></div>
+            <div style="margin-top: 20px;">
+                <a href="index.html" style="color: #38bdf8; text-decoration: none;">← Back to Verification Portal</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginBtn = document.getElementById('loginTabBtn');
+            const regBtn = document.getElementById('regTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginBtn.style.background = '#0ea5e9';
+                regBtn.style.background = '#475569';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                regBtn.style.background = '#0ea5e9';
+                loginBtn.style.background = '#475569';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const msgBox = document.getElementById('msgBox');
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                msgBox.style.color = '#34d399';
+                msgBox.innerText = 'Login successful! Redirecting...';
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setTimeout(() => {
+                    window.location.href = 'index.html'; // Or redirect to specific dashboard based on role
+                }, 1000);
+            } else {
+                msgBox.style.color = '#f87171';
+                msgBox.innerText = data.message;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            const msgBox = document.getElementById('msgBox');
+
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, role })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                msgBox.style.color = '#34d399';
+                msgBox.innerText = 'Registered successfully! Please login.';
+                switchTab('login');
+            } else {
+                msgBox.style.color = '#f87171';
+                msgBox.innerText = data.message;
+            }
+        }
+    </script>
+</body>
+</html>

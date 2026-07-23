@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Upload Certificate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <main class="card" style="max-width: 500px; margin: 0 auto;">
+            <h2>Upload Student Certificate</h2>
+            <form id="uploadForm" onsubmit="uploadCertificate(event)" style="margin-top: 20px; text-align: left;">
+                <label>Certificate ID:</label>
+                <input type="text" id="certId" required style="width:100%; margin-bottom:12px; margin-top:5px;">
+                
+                <label>Student Name:</label>
+                <input type="text" id="studentName" required style="width:100%; margin-bottom:12px; margin-top:5px;">
+                
+                <label>Register Number:</label>
+                <input type="text" id="regNo" required style="width:100%; margin-bottom:12px; margin-top:5px;">
+
+                <label>Course Name:</label>
+                <input type="text" id="course" required style="width:100%; margin-bottom:12px; margin-top:5px;">
+
+                <label>Upload Certificate PDF:</label>
+                <input type="file" id="certificatePdf" accept="application/pdf" required style="width:100%; margin-bottom:20px; margin-top:5px; color:#fff;">
+
+                <button type="submit" style="width:100%;">Store Certificate</button>
+            </form>
+            <p id="statusMsg" style="margin-top: 15px;"></p>
+            <br><a href="index.html" style="color: #38bdf8;">Logout / Home</a>
+        </main>
+    </div>
+    <script>
+        async function uploadCertificate(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('certificateId', document.getElementById('certId').value);
+            formData.append('studentName', document.getElementById('studentName').value);
+            formData.append('regNo', document.getElementById('regNo').value);
+            formData.append('course', document.getElementById('course').value);
+            formData.append('certificatePdf', document.getElementById('certificatePdf').files[0]);
+
+            const msg = document.getElementById('statusMsg');
+            msg.style.color = '#38bdf8';
+            msg.innerText = 'Uploading & Storing on Blockchain/Database...';
+
+            const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.success) {
+                msg.style.color = '#34d399';
+                msg.innerText = '✅ ' + data.message;
+                document.getElementById('uploadForm').reset();
+            } else {
+                msg.style.color = '#f87171';
+                msg.innerText = '❌ Error: ' + data.error;
+            }
+        }
+    </script>
+</body>
+</html>
