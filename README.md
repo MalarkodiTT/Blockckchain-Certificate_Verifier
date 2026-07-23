@@ -3,6 +3,7 @@
 
 Live Link: https://blockckchain-certificate-verifier.onrender.com/
 
+-----------------------------------------------------------------------------
 
 ## 📋 SECTION 1: EXECUTIVE PROJECT SUMMARY
 --------------------------------------------------------------------------------
